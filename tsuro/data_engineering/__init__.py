@@ -1,1 +1,7 @@
-from tsuro.data_engineering.moving_moments import moving_average, ewma
+from tsuro.data_engineering.rolling_moments import (
+    moving_average,
+    moving_variance,
+    moving_stddev,
+    ewma,
+    ewmstd,
+)

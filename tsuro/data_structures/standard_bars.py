@@ -43,7 +43,8 @@ class StandardBars(Bars):
         filepath_or_df: Union[str, LazyFrame, DataFrame],
         bar_size: float = 100000,
         bar_col: str = "volume",
-        group_by: Union[None, list[str]] = None,
+        partition_by: Union[None, list[str]] = None,
+        order_by: str = None,
         aggs: Union[str, list] = "ohlc",
     ) -> Union[LazyFrame, DataFrame]:
         """
@@ -67,16 +68,24 @@ class StandardBars(Bars):
             ]
         pdf = self._generate_dataframe(filepath_or_df=filepath_or_df)
 
+        if order_by is not None:
+            pdf = pdf.sort(by=order_by)
+
         pdf = (
             pdf.with_columns(
-                pl.col(bar_col).cum_sum().over(group_by).alias("cum_sum"),
+                pl.col(bar_col)
+                .cum_sum()
+                .over(partition_by=partition_by)
+                .alias("cum_sum"),
             )
             .with_columns((pl.col("cum_sum") / bar_size).alias("bar_index"))
             .cast({"bar_index": T.Int32})
             .drop("cum_sum")
         )
 
-        group_bars = ["bar_index"] if group_by is None else ["bar_index"] + group_by
+        group_bars = (
+            ["bar_index"] if partition_by is None else ["bar_index"] + partition_by
+        )
 
         return pdf.group_by(group_bars).agg(*aggs)
 
@@ -84,7 +93,8 @@ class StandardBars(Bars):
         self,
         filepath_or_df: Union[str, LazyFrame, DataFrame],
         volume_bar_size: float = 100000,
-        group_by: Union[None, list[str]] = None,
+        partition_by: Union[None, list[str]] = None,
+        order_by: str = None,
         aggs: Union[str, list] = "ohlc",
     ) -> Union[LazyFrame, DataFrame]:
         """
@@ -94,7 +104,8 @@ class StandardBars(Bars):
             filepath_or_df=filepath_or_df,
             bar_size=volume_bar_size,
             bar_col=self.volume_col,
-            group_by=group_by,
+            partition_by=partition_by,
+            order_by=order_by,
             aggs=aggs,
         )
 
@@ -104,7 +115,8 @@ class StandardBars(Bars):
         self,
         filepath_or_df: Union[str, LazyFrame, DataFrame],
         dollar_bar_size: float = 100000,
-        group_by: Union[None, list[str]] = None,
+        partition_by: Union[None, list[str]] = None,
+        order_by: str = None,
         aggs: Union[str, list] = "ohlc",
     ) -> Union[LazyFrame, DataFrame]:
         """
@@ -114,7 +126,8 @@ class StandardBars(Bars):
             filepath_or_df=filepath_or_df,
             bar_size=dollar_bar_size,
             bar_col=self.dollar_col,
-            group_by=group_by,
+            partition_by=partition_by,
+            order_by=order_by,
             aggs=aggs,
         )
 

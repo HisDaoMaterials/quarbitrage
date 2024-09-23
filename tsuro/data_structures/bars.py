@@ -5,7 +5,7 @@ import polars as pl
 from polars import DataFrame, LazyFrame
 
 from tsuro.utils.file_handling import extract_csv_row_to_list, get_filetype
-from tsuro.utils.exception_checks import check_if_columns_in_list
+from tsuro.utils._exception_checks import check_if_columns_in_list
 
 
 class Bars(ABC):

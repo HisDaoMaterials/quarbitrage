@@ -2,7 +2,7 @@
 Module for functions that check if specified conditions are satisfied, else an exception is thrown
 """
 
-from tsuro.utils.exceptions import UnequalLengthError, MissingColumnError
+from tsuro.utils._exceptions import UnequalLengthError, MissingColumnError
 
 
 def check_if_equal_length(list_dicts: dict[list | dict]) -> Exception:

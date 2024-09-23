@@ -7,7 +7,7 @@ from polars import DataFrame, LazyFrame
 from polars.datatypes.classes import DataTypeClass
 
 from typing import Union, Optional
-from tsuro.utils.exception_checks import check_if_equal_length
+from tsuro.utils._exception_checks import check_if_equal_length
 
 
 def cast_strings_to_datetime(
