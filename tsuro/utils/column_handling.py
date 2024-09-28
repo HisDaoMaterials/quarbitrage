@@ -2,14 +2,16 @@
 Column Helper Module
 """
 
-from typing import Union
-from polars import DataFrame, LazyFrame
+from typing import Union, Optional
+from polars import DataFrame, LazyFrame, Series
 
 import polars as pl
 
 
-def create_index(
-    df: Union[LazyFrame, DataFrame], order_by: str = None, index_col: str = "index"
+def create_dataframe_index(
+    df: Union[LazyFrame, DataFrame],
+    order_by: str = None,
+    index_col: str = "index",
 ) -> Union[LazyFrame, DataFrame]:
     """
     Create index column
@@ -20,9 +22,33 @@ def create_index(
     return df.with_columns(pl.int_range(pl.len(), dtype=pl.UInt32).alias(index_col))
 
 
-def transform_cols_to_index(
+def create_series_index(
+    series: Union[Series, list],
+    series_alias: str = None,
+    to_lazyframe: bool = True,
+    index_col: str = "index",
+) -> Union[LazyFrame, DataFrame]:
+    """
+    Create index column for series
+    """
+    assert isinstance(
+        series, (pl.Series, list)
+    ), "'series' argument must be Polars.Series or list."
+    if isinstance(series, list):
+        series = pl.Series(values=series)
+    series = series.sort()
+
+    if series_alias is not None:
+        series = series.alias(series_alias)
+    series = pl.LazyFrame(series) if to_lazyframe else pl.DataFrame(series)
+
+    return series.with_columns(pl.int_range(pl.len(), dtype=pl.UInt32).alias(index_col))
+
+
+def transform_columns_to_index(
     df: Union[LazyFrame, DataFrame],
-    columns: Union[str, list[str]],
+    index_columns: Union[str, list[str]],
+    index: Union[Series, list] = None,
     return_index: bool = False,
 ) -> Union[LazyFrame, DataFrame]:
     """
@@ -35,8 +61,8 @@ def transform_cols_to_index(
         "time_end": ["10:10", "10:10", "10:15"]
         }
     )
-    >>> df = transform_cols_to_index(df, columns = ["time_start", "time_end"])
-    >>> df
+    >>> df1 = transform_columns_to_index(df, columns = ["time_start", "time_end"])
+    >>> df1
     ----------------------------------------------------------------------
     | volume | time_start | time_end | time_start_index | time_end_index |
     ----------------------------------------------------------------------
@@ -44,23 +70,42 @@ def transform_cols_to_index(
     |   20   |   10:05    |   10:10  |        1         |        2       |
     |   50   |   10:10    |   10:15  |        2         |        3       |
     ----------------------------------------------------------------------
+    >>> index = pl.Series(values = ["10:00", "10:02", "10:05", "10:08", "10:10", "10:12", "10:15"])
+    >>> df2 = transform_columns_to_index(df, columns = ["time_start", "time_end"], index = index)
+    >>> df2
+    ----------------------------------------------------------------------
+    | volume | time_start | time_end | time_start_index | time_end_index |
+    ----------------------------------------------------------------------
+    |   10   |   10:00    |   10:10  |        0         |        4       |
+    |   20   |   10:05    |   10:10  |        2         |        4       |
+    |   50   |   10:10    |   10:15  |        4         |        6       |
+    ----------------------------------------------------------------------
     """
+    if isinstance(index, list):
+        index = pl.Series(values=index)
 
-    if isinstance(columns, str):
-        columns = [columns]
+    if isinstance(index_columns, str):
+        index_columns = [index_columns]
 
-    values_df = get_all_columns_values(df, columns=columns)
-    values_index_df = create_index(values_df, order_by="values")
+    if index is None:
+        index_values_df = get_all_columns_values(df, columns=index_columns)
+        index = create_dataframe_index(index_values_df, order_by="values")
+    else:
+        index = create_series_index(
+            index,
+            series_alias="values",
+            to_lazyframe=True if isinstance(df, pl.LazyFrame) else False,
+        )
 
-    for column in columns:
+    for column in index_columns:
         df = df.join(
-            values_index_df.rename({"index": f"{column}_index"}),
+            index.rename({"index": f"{column}_index"}),
             left_on=[column],
             right_on=["values"],
         )
 
     if return_index:
-        return df, values_index_df
+        return df, index
 
     return df
 
@@ -81,3 +126,58 @@ def get_all_columns_values(
         cols_values = cols_values.unique()
 
     return cols_values
+
+
+def create_list_from_column(df: Union[LazyFrame, DataFrame], column: str) -> list:
+    """
+    Create list from column values
+    """
+    return df.select(column).to_series().to_list()
+
+
+def create_conjunctive_conditional(
+    columns: Union[list[str], str], values: Union[float, str, list[any]]
+) -> bool:
+    """
+    Create Polars conjuctive (AND) conditional based on provided columns and values
+    """
+    if isinstance(columns, str):
+        columns = [columns]
+    if isinstance(values, list):
+        assert len(columns) == len(values), "len(columns) must equal len(values)"
+        conjunctive_conditional = pl.col(columns[0]) == values[0]
+    else:
+        conjunctive_conditional = pl.col(columns[0]) == values
+
+    for idx in range(1, len(columns)):
+        conjunctive_conditional = (
+            conjunctive_conditional & (pl.col(columns[idx]) == values[idx])
+            if isinstance(values, list)
+            else conjunctive_conditional & (pl.col(columns[idx]) == values)
+        )
+
+    return conjunctive_conditional
+
+
+def create_disjunctive_conditional(
+    columns: Union[list[str], str], values: Union[float, str, list[any]]
+) -> bool:
+    """
+    Create Polars disjunctive (OR) conditional based on provided columns and values
+    """
+    if isinstance(columns, str):
+        columns = [columns]
+    if isinstance(values, list):
+        assert len(columns) == len(values), "len(columns) must equal len(values)"
+        disjunctive_conditional = pl.col(columns[0]) == values[0]
+    else:
+        disjunctive_conditional = pl.col(columns[0]) == values
+
+    for idx in range(1, len(columns)):
+        disjunctive_conditional = (
+            disjunctive_conditional | (pl.col(columns[idx]) == values[idx])
+            if isinstance(values, list)
+            else disjunctive_conditional | (pl.col(columns[idx]) == values)
+        )
+
+    return disjunctive_conditional
