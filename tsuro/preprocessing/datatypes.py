@@ -11,7 +11,7 @@ from tsuro.utils._exception_checks import check_if_equal_length
 
 
 def cast_strings_to_datetime(
-    pdf: Union[DataFrame, LazyFrame],
+    df: Union[DataFrame, LazyFrame],
     columns: Union[str, list[str]],
     dtypes: Union[DataTypeClass, dict[DataTypeClass]] = pl.Datetime,
     datetime_format: Union[str, dict[str]] = r"%m/%d/%Y %H:%M",
@@ -20,15 +20,23 @@ def cast_strings_to_datetime(
     """
     Cast Polars DataFrame string columns into datetime datatypes.
 
-    Args:
-        pdf: Polars DataFrame to cast
-        columns: List of column names
-        datetime_format: String or Dictionary mapping column names to date/datetime format for parsing
+    Parameters
+    ----------
+        pdf: Polars DataFrame / LazyFrame
+            Polars DataFrame / LazyFrame that has columnsto cast
+
+        columns: str / list
+            String column name or list of column names to cast to datetime.
+
+        datetime_format: String / Dictionary
+            mapping column names to date/datetime format for parsing
+
         dtypes: DataTypeClass or Dictionary mapping column names to DataTypeClass.
         strict:
 
-    Returns:
-        polars.DataFrame or polars.LazyFrame
+    Returns
+    -------
+        polars.DataFrame / polars.LazyFrame
     """
     assert isinstance(
         columns, (str, list)
@@ -50,16 +58,11 @@ def cast_strings_to_datetime(
         {"columns": columns, "datetime_format": datetime_format, "dtypes": dtypes}
     )
 
-    # Build casting expression
-    casting_expression = [
+    return df.with_columns(
         pl.col(column)
         .str.strptime(
             dtype=dtypes[column], format=datetime_format[column], strict=strict
         )
         .alias(column)
         for column in columns
-    ]
-
-    pdf = pdf.with_columns(*casting_expression)
-
-    return pdf
+    )

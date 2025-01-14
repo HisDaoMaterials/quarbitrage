@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "tsuro"
+version = "0.1.0"
+description = "tsuro: quantitative finance in python"
+authors = ["HisDaoMaterials"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+polars = "^1.16.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

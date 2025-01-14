@@ -1,0 +1,1 @@
+from tsuro.data_engineering.plugins.plugins import create_barrier_label_plugin

@@ -165,7 +165,6 @@ def moving_variance(
     """
     Calculate weighted moving variance for all specified columns with all provided weights.
 
-
     Let weights = [w_1,...,w_n], then we compute:
 
         y[t] = beta*(w_1(x[t-n+1] - mu)^2 + ... + w_n(x[t] - mu)^2)/(w_1 + ... + w_n)

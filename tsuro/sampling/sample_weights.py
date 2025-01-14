@@ -25,8 +25,8 @@ def create_overlap_matrix(
     remove_no_overlaps: bool = True,
 ) -> Union[DataFrame, LazyFrame]:
     """
-    Create overlap matrix
-
+    Create overlap indicator matrix between all time intervals and bar indices start / end timestamps.
+    
     Parameters
     ----------
         bars_df : Polars DataFrame / LazyFrame

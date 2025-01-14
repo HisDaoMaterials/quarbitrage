@@ -44,6 +44,8 @@ def get_filetype(file_path: str) -> str:
         file_type = "json"
     elif file_format in ["txt"]:
         file_type = "text"
+    elif file_format in ["yaml"]:
+        file_type = "yaml"
     else:
         file_type = None
     return file_type
