@@ -1,2 +1,5 @@
 # tsuro
-A repository for quantitative finance
+A quantitative finance library for python.
+
+
+
