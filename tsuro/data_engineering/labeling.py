@@ -20,11 +20,11 @@ def create_triple_barrier_labels(
 ) -> Union[DataFrame, LazyFrame]:
     """
     Create triple barrier labels with the following value breakdown:
-       -1: If the upper horizontal barrier is hit first.
-        1: If the lower horizontal barrier is hit first.
-        0: If the vertical barrier is hit first, and final returns lie in (-min_return, min_return)
-       -2: If the vertical barrier is hit first, and final returns lie in (lower barrier, -min_return]
-        2: If the vertical barrier is hit first, and final returns lie in [min_return, upper_barrier)
+       -1: If the lower horizontal barrier is hit first.
+        1: If the upper horizontal barrier is hit first.
+        0: If the vertical barrier is hit first and final returns lie in interval (-min_return, min_return).
+       -2: If the vertical barrier is hit first and final returns lie in interval (lower barrier, -min_return].
+        2: If the vertical barrier is hit first and final returns lie in interval [min_return, upper_barrier).
        42: Error. Both upper and lower horizontal barriers were hit at the same time.
     """
     if pt_multiplier <= 0:
