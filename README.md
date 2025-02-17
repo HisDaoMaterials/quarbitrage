@@ -1,6 +1,8 @@
 ![image](https://github.com/user-attachments/assets/98f80054-9185-4658-ae6a-9bd0ca2615ea)
 
-A free-to-use Python library for retail investors and researchers to develop and test algorithmic trading strategies. This library implements statistical models and hypothesis tests inspired by academic articles and books in quantitative finance, enabling users to conduct rigorous analysis and backtesting.
+A free-to-use Python library for retail investors and researchers to develop and test algorithmic trading strategies. This library implements statistical models and hypothesis tests inspired by academic articles and books in quantitative finance, enabling users to conduct rigorous analysis and backtesting. 
+
+Note: This library is designed for use with Polars DataFrames, chosen for their superior speed and efficiency over Pandas. Compatibility with Pandas will be added in a future update.
 
 ### Version 0.6: Current status
 - **tsuro/data_structures**:
