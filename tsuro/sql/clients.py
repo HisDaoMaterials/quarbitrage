@@ -7,6 +7,7 @@ CXDatabaseClient requires 'connectorx' library.
 
 import connectorx as cx
 from typing import Union
+from warnings import warn
 
 from polars import DataFrame, LazyFrame
 
@@ -59,7 +60,7 @@ class CXDatabaseClient(DatabaseClient):
                 self.connection_config = connection_config
             except Exception as e:
                 raise e(
-                    "self.connection must adopt the URI format 'dbms://user:password@host:port' or 'dbms://user:password@host:port/database'"
+                    "self.connection must adopt URI format 'dbms://user:password@host:port' or 'dbms://user:password@host:port/database'"
                 )
 
     def read_query(
@@ -144,8 +145,8 @@ class CXDatabaseClient(DatabaseClient):
             table_name = f"{database}.{table_name}"
         else:
             if database is not None:
-                print(
-                    "WARNING: Provided 'database' argument is not overriding database specified in connection configuration."
+                warn(
+                    "Provided 'database' argument is not overriding database specified in connection configuration."
                 )
 
         if create_database_if_not_exists:

@@ -4,7 +4,7 @@ Exceptions module
 
 
 class UnequalLengthError(ValueError):
-    """Warning class used to notify the user that the two lists/dictionaries don't have equal length"""
+    """Exception class used to notify the user that the two lists/dictionaries don't have equal length"""
 
     def __init__(self, length1: int, length2: int, alias1: str, alias2: str):
         self.length1 = length1
@@ -17,8 +17,8 @@ class UnequalLengthError(ValueError):
 
 
 class MissingColumnError(ValueError):
-    """Warning class used to notify the user that the list"""
-
+    """Exception class used to notify the user that the list"""
+    
     def __init__(self, column: str, column_reference_list: list[str]):
         self.column = column
         self.column_reference_list = column_reference_list

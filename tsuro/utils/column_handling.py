@@ -7,6 +7,8 @@ from polars import DataFrame, LazyFrame, Series
 
 import polars as pl
 
+import numpy as np
+
 
 def create_dataframe_index(
     df: Union[LazyFrame, DataFrame],
@@ -23,7 +25,7 @@ def create_dataframe_index(
 
 
 def create_series_index(
-    series: Union[Series, list],
+    series: Union[Series, DataFrame, list],
     series_alias: str = None,
     to_lazyframe: bool = True,
     index_col: str = "index",
@@ -32,15 +34,27 @@ def create_series_index(
     Create index column for series
     """
     assert isinstance(
-        series, (pl.Series, list)
-    ), "'series' argument must be Polars.Series or list."
-    if isinstance(series, list):
-        series = pl.Series(values=series)
-    series = series.sort()
+        series, (pl.Series, DataFrame, list)
+    ), "'series' argument must be Polars.Series, Polars.DataFrame or list."
 
-    if series_alias is not None:
-        series = series.alias(series_alias)
-    series = pl.LazyFrame(series) if to_lazyframe else pl.DataFrame(series)
+    if isinstance(series, DataFrame):
+        assert series.width == 1, "DataFrame must have only one column"
+        series = series.sort(by=series.columns[0])
+
+        if series_alias is not None:
+            series = series.select(pl.col(series.columns[0]).alias(series_alias))
+
+        series = series.lazy() if to_lazyframe else series
+    else:
+        if isinstance(series, list):
+            series = pl.Series(values=series)
+
+        series = series.sort()
+
+        if series_alias is not None:
+            series = series.alias(series_alias)
+
+        series = pl.LazyFrame(series) if to_lazyframe else pl.DataFrame(series)
 
     return series.with_columns(pl.int_range(pl.len(), dtype=pl.UInt32).alias(index_col))
 
@@ -132,7 +146,7 @@ def create_list_from_column(df: Union[LazyFrame, DataFrame], column: str) -> lis
     """
     Create list from column values
     """
-    return df.select(column).to_series().to_list()
+    return df.select(column).to_series().sort().to_list()
 
 
 def create_conjunctive_conditional(
@@ -181,3 +195,22 @@ def create_disjunctive_conditional(
         )
 
     return disjunctive_conditional
+
+
+def compute_column_sums(
+    dataframe: DataFrame, columns: Optional[list] = None
+) -> DataFrame:
+    """
+    Compute vertical sum of values across all columns
+    """
+    if columns is not None:
+        dataframe = dataframe.select(columns)
+
+    return dataframe.sum()
+
+
+def compute_ndarray_sums(ndarray: np.ndarray, axis: int = 0) -> np.ndarray:
+    """
+    Compute sum across specified axis in a numpy.ndarray
+    """
+    return ndarray.sum(axis=axis)
