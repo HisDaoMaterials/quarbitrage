@@ -40,7 +40,7 @@ Note: This library is designed for use with Polars DataFrames, chosen for their 
 ## Current Implementations
 <ul>
   <li>
-    Techniques from Advances in Financial Machine Learning (2018) by Marcos López de Prado.
+    Techniques from *Advances in Financial Machine Learning* (2018) by Marcos López de Prado.
   </li>
 </ul>
 
