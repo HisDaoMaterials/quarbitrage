@@ -21,7 +21,7 @@ Note: This library is designed for use with Polars DataFrames, chosen for their 
 - **tsuro/ensemble**:
   - bagging: Complete sequential bootstrap ensemble model.
 - **tsuro/statistics**: Implement financial statistics (Sharpe Ratio / Max Drawdown etc.) and hypothesis testing functions.
-- **tsuro/feature_importance**: Implement feature importance for machine learning models.
+- **tsuro/feature_importance**: Implement feature selection tools for machine learning models.
 - **tsuro/bet_sizing**: Implement optimal bet sizing functions (e.g., Kelly Criterion).
 
 ## Features
