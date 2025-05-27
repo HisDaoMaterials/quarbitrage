@@ -5,24 +5,24 @@ A free-to-use Python library for retail investors and researchers to develop and
 Note: This library is designed for use with Polars DataFrames, chosen for their superior speed and efficiency over Pandas. Compatibility with Pandas will be added in a future update.
 
 ### Version 0.6: Current status
-- **tsuro/data_structures**:
+- **quarbitrage/data_structures**:
   - standard_bars: Aggregate financial data at specified dollar/volume granularity. Bars exhibit improved statistical properties over raw financial data.
-- **tsuro/data_engineering**:
+- **quarbitrage/data_engineering**:
   - labeling: Triple Barrier class labels
   - rolling_moments: Moving average, variance, exponentially-weighted moving averages / variances.
-- **tsuro/preprocessing**:
+- **quarbitrage/preprocessing**:
   - datatypes: Convert string to datetime
-- **tsuro/sampling**:
+- **quarbitrage/sampling**:
   - bootstrapping: Sequential bootstrap sampling, and overlap indicator matrix
-- **tsuro/sql**: DatabaseClient API to read/write with local databases.
-- **tsuro/utils**: Helper library
+- **quarbitrage/sql**: DatabaseClient API to read/write with local databases.
+- **quarbitrage/utils**: Helper library
 
 ### Project Roadmap (1.0)
-- **tsuro/ensemble**:
+- **quarbitrage/ensemble**:
   - bagging: Complete sequential bootstrap ensemble model.
-- **tsuro/statistics**: Implement financial statistics (Sharpe Ratio / Max Drawdown etc.) and hypothesis testing functions.
-- **tsuro/feature_importance**: Implement feature selection tools for machine learning models.
-- **tsuro/bet_sizing**: Implement optimal bet sizing functions (e.g., Kelly Criterion).
+- **quarbitrage/statistics**: Implement financial statistics (Sharpe Ratio / Max Drawdown etc.) and hypothesis testing functions.
+- **quarbitrage/feature_importance**: Implement feature selection tools for machine learning models.
+- **quarbitrage/bet_sizing**: Implement optimal bet sizing functions (e.g., Kelly Criterion).
 
 ## Features
 <ul>
@@ -53,7 +53,7 @@ Awaiting Version 1.0 completion
 Awaiting Version 1.0 completion
 
 ## License
-Tsuro is available under the MIT license. See the LICENSE file for more info.
+Quarbitrage is available under the MIT license. See the LICENSE file for more info.
 ## Disclaimer
 
 This library is for educational and research purposes only. It does not constitute financial advice.
