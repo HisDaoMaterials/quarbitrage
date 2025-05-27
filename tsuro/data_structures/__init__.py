@@ -1,1 +1,0 @@
-from tsuro.data_structures.standard_bars import StandardBars
